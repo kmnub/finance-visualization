@@ -1,12 +1,11 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-module.exports = async function handler(req, res) {
-  // CORS 헤더 설정
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-  
+
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -31,7 +30,6 @@ module.exports = async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    // 재무 데이터를 이해하기 쉬운 형식으로 포맷
     const financialSummary = JSON.stringify(financialData, null, 2);
 
     const prompt = `다음은 ${corpName}의 최근 재무 현황입니다:
@@ -53,8 +51,8 @@ ${financialSummary}
     res.status(200).json({ analysis });
   } catch (error) {
     console.error('Gemini API Error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: error.message || 'AI 분석 중 오류가 발생했습니다'
     });
   }
-};
+}
